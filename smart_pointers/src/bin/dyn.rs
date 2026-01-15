@@ -1,17 +1,16 @@
 #![allow(unused)]
 // ============================================================================ 
-// 別分发 (Dynamic Dispatch) - dyn Trait 对象
+// 动态分发 (Dynamic Dispatch) - dyn Trait 对象
 // ============================================================================ 
 //
 // `dyn` 关键字用于创建 Trait 对象，实现动态分发。
 //
 // 主要特点：
 // 1. 运行时确定具体类型
-// 2. 通过 vtable（虚把表）调用方法
+// 2. 通过 vtable（虚函数表）调用方法
 // 3. 动态大小类型（DST）
 // 4. 必须通过引用或智能指针使用
-// 5. 与类型（静态分发）相对
-
+// 5. 与泛型（静态分发）相对
 
 // ============================================================================ 
 // 示例 1: 基本概念 - 静态分发 vs 动态分发
@@ -25,18 +24,18 @@ struct Cat;
 
 impl Animal for Dog {
     fn make_sound(&self) {
-        println!("汹汹！");
+        println!("汪汪！");
     }
 }
 
 impl Animal for Cat {
     fn make_sound(&self) {
-        println!("啰啰！");
+        println!("喵喵！");
     }
 }
 
 fn example1_basic_concept() {
-    println!("=== 静态分发（类型）===");
+    println!("=== 静态分发（泛型）===");
     let dog = Dog;
     let cat = Cat;
 
@@ -56,7 +55,7 @@ fn example1_basic_concept() {
     }
 }
 
-// 静态分发：类型
+// 静态分发：泛型
 fn make_sound_static<T: Animal>(animal: &T) {
     animal.make_sound();
 }
@@ -84,7 +83,7 @@ fn example2_trait_object_forms() {
     let animal: Rc<dyn Animal> = Rc::new(Cat);
     animal.make_sound();
 
-    // 5. Arc<dyn Trait>（繁繁安全共享）
+    // 5. Arc<dyn Trait>（线程安全共享）
     use std::sync::Arc;
     let animal: Arc<dyn Animal> = Arc::new(Dog);
     animal.make_sound();
@@ -113,8 +112,7 @@ fn example3_performance() {
     let static_time = start.elapsed();
 
     // 动态分发
-    let animals: Vec<&dyn Animal> = vec
-![&dog, &cat];
+    let animals: Vec<&dyn Animal> = vec![&dog, &cat];
     let start = Instant::now();
     for _ in 0..ITERATIONS {
         for animal in &animals {
@@ -139,7 +137,7 @@ fn example4_object_safety() {
         fn print(&self);
     }
 
-    // ✅ 对象安全：没有类型参数
+    // ✅ 对象安全：没有泛型参数
     trait Display {
         fn display(&self);
     }
@@ -149,9 +147,9 @@ fn example4_object_safety() {
         fn clone(&self) -> Self; // 返回 Self，不能创建 Trait 对象
     }
 
-    // ❌ 非对象安全：方法有类型参数
+    // ❌ 非对象安全：方法有泛型参数
     trait GenericMethod {
-        fn process<T>(&self, item: T); // 类型参数，不能创建 Trait 对象
+        fn process<T>(&self, item: T); // 泛型参数，不能创建 Trait 对象
     }
 
     // ✅ 对象安全：使用关联类型
@@ -204,8 +202,7 @@ fn example6_trait_object_parameter() {
     process_animal(&cat);
 
     // 使用 Trait 对象集合
-    let animals: Vec<&dyn Animal> = vec
-![&dog, &cat];
+    let animals: Vec<&dyn Animal> = vec![&dog, &cat];
     process_animals(&animals);
 }
 
@@ -240,7 +237,7 @@ impl Display for Cat {
     }
 }
 
-// 定义一个拼捷 Trait
+// 定义一个组合 Trait
 trait AnimalDisplay: Animal + Display {}
 impl<T: Animal + Display> AnimalDisplay for T {}
 
@@ -250,10 +247,7 @@ fn example7_combine_traits() {
 
     // 组合多个 Trait： dyn Animal + Display
     // 使用 dyn AnimalDisplay 代替 dyn Animal + Display
-    let animals: Vec<Box<dyn AnimalDisplay>> = vec![
-        Box::new(dog),
-        Box::new(cat),
-    ];
+    let animals: Vec<Box<dyn AnimalDisplay>> = vec![Box::new(dog), Box::new(cat)];
 
     for animal in animals {
         animal.make_sound();
@@ -269,14 +263,17 @@ use std::mem;
 fn example8_memory_layout() {
     // Trait 对象由两部分组成：
     // 1. 数据指针（指向实际数据）
-    // 2. vtable 指针（指向虚场表）
+    // 2. vtable 指针（指向虚函数表）
 
     let dog = Dog;
     let _trait_obj: &dyn Animal = &dog;
 
     println!("Trait 对象大小:");
     println!("  &dyn Animal: {} 字节", mem::size_of::<&dyn Animal>());
-    println!("  Box<dyn Animal>: {} 字节", mem::size_of::<Box<dyn Animal>>());
+    println!(
+        "  Box<dyn Animal>: {} 字节",
+        mem::size_of::<Box<dyn Animal>>()
+    );
     println!("  Dog: {} 字节", mem::size_of::<Dog>());
 
     // 在 64 位 系统上：
@@ -291,7 +288,7 @@ fn example9_limitations() {
     println!("Trait 对象的局限性:");
     println!("  1. 不能调用关联函数（没有 self）");
     println!("  2. 不能调用返回 Self 的方法");
-    println!("  3. 不能调用有类型参数的方法");
+    println!("  3. 不能调用有泛型参数的方法");
     println!("  4. 不能自动派生 trait");
     println!("  5. 性能略低于静态分发");
 }
@@ -374,7 +371,7 @@ struct PayPalPayment;
 
 impl PaymentStrategy for CreditCardPayment {
     fn pay(&self, amount: f64) -> Result<String, String> {
-        Ok(format!("xinyongka支付 ${:.2}", amount))
+        Ok(format!("信用卡支付 ${:.2}", amount))
     }
 }
 
@@ -478,11 +475,11 @@ fn example13_when_to_use() {
     println!("使用动态分发 (dyn Trait) 的场景:");
     println!("  1. 运行时才能确定类型");
     println!("  2. 需要存储不同类型的集合");
-    println!("  3. 减少 二进制囊胀");
+    println!("  3. 减少 二进制膨胀");
     println!("  4. 实现回调、插件系统");
     println!("  5. API 边界（动态库）");
 
-    println!("\n使用静态分发 (类型) 的场景:");
+    println!("\n使用静态分发 (泛型) 的场景:");
     println!("  1. 类型在编译时已知");
     println!("  2. 追求最高性能");
     println!("  3. 需要内联优化");
@@ -530,7 +527,10 @@ impl Drawable for Rectangle {
 fn example14_downcasting() {
     let shapes: Vec<Box<dyn Drawable>> = vec![
         Box::new(Circle { radius: 5.0 }),
-        Box::new(Rectangle { width: 10.0, height: 20.0 }),
+        Box::new(Rectangle {
+            width: 10.0,
+            height: 20.0,
+        }),
     ];
 
     for shape in shapes {
@@ -538,9 +538,12 @@ fn example14_downcasting() {
 
         // 向下转换
         if let Some(circle) = shape.as_any().downcast_ref::<Circle>() {
-            println!("  是圆圈，面积: {}", std::f64::consts::PI * circle.radius * circle.radius);
+            println!(
+                "  是圆形，面积: {}",
+                std::f64::consts::PI * circle.radius * circle.radius
+            );
         } else if let Some(rectangle) = shape.as_any().downcast_ref::<Rectangle>() {
-            println!("  是矩形，静积: {}", rectangle.width * rectangle.height);
+            println!("  是矩形，面积: {}", rectangle.width * rectangle.height);
         }
     }
 }
@@ -566,8 +569,7 @@ fn example15_equality() {
         }
     }
 
-    let shapes: Vec<Box<dyn Shape>> = vec
-![ 
+    let shapes: Vec<Box<dyn Shape>> = vec![
         Box::new(Square { side: 5.0 }),
         Box::new(Square { side: 5.0 }),
     ];
@@ -626,11 +628,8 @@ impl Processor for LowercaseProcessor {
 }
 
 fn example17_trait_object_iterators() {
-    let processors: Vec<Box<dyn Processor>> = vec
-![ 
-        Box::new(UppercaseProcessor),
-        Box::new(LowercaseProcessor),
-    ];
+    let processors: Vec<Box<dyn Processor>> =
+        vec![Box::new(UppercaseProcessor), Box::new(LowercaseProcessor)];
 
     let text = "Hello World";
 
@@ -691,7 +690,7 @@ fn example18_error_handling() {
 // ============================================================================ 
 // 示例 19: Trait 对象的序列化（需要额外 trait）
 // ============================================================================ 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 trait Serializable {
     fn serialize(&self) -> String;
@@ -725,7 +724,7 @@ fn example19_serialization() {
 // 示例 20: Trait 对象的 Send 和 Sync
 // ============================================================================ 
 fn example20_send_sync() {
-    // Trait 对象可以是 Send 和 Sync，如果 trait 佰束满足
+    // Trait 对象可以是 Send 和 Sync，如果 trait 约束满足
     let dog = Dog;
     let _trait_obj: Box<dyn Animal> = Box::new(dog);
 
@@ -734,7 +733,7 @@ fn example20_send_sync() {
     //     trait_obj.make_sound();
     // });
 
-    println!("Trait 对象的线程安全性取决于 trait 佰束条件");
+    println!("Trait 对象的线程安全性取决于 trait 约束条件");
 }
 
 // ============================================================================ 
@@ -838,13 +837,13 @@ fn main() {
     println!("  - 策略模式");
     println!("  - 回调");
     println!("  - 运行时类型集合");
-    println!("  - 减少二进制去胀");
+    println!("  - 减少二进制膨胀");
     println!("\n性能:");
     println!("  - 略低于静态分发（vtable 查找）");
-    println!("  - 但更灵活，避免代码有带有的膨胀");
+    println!("  - 但更灵活，避免代码膨胀");
     println!("  - 堆分配开销（Box）");
     println!("\n对象安全规则:");
     println!("  - 方法不能返回 Self");
-    println!("  - 方法不能有类型参数");
+    println!("  - 方法不能有泛型参数");
     println!("  - 没有 Self: Sized 约束");
 }

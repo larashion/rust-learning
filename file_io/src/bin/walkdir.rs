@@ -25,7 +25,6 @@ use std::io;
 // 使用方式：walkdir crate
 // Cargo.toml 需要添加: walkdir = "2.3"
 
-/*
 fn example1_basic_walkdir() {
     use walkdir::WalkDir;
 
@@ -39,7 +38,6 @@ fn example1_basic_walkdir() {
         println!("  {:?}", entry.path());
     }
 }
-*/
 
 // ============================================================================ 
 // 示例 2: 使用 fs 递归遍历（标准库版本）
