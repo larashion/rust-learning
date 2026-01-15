@@ -102,8 +102,7 @@ fn example_benchmark() {
     // 2. 测试快速排序 (Quick Sort - Hybrid)
     let time_quick = calculate(quick_sort, &data);
 
-    // 3. 测试标准库排序 (直接传闭包)
-    // 闭包 |arr| arr.sort() 没有捕获任何可变环境，所以它是 Fn
+    // 3. 测试标准库排序
     let time_std = calculate(|arr| arr.sort(), &data);
 
     println!("---------------------------------------------------");
