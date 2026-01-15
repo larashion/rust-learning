@@ -1,26 +1,26 @@
 // #![allow(unused)] // Cleaned up: Removed global suppression
-// ============================================================================ 
+// ============================================================================
 // 异步运行时 - Tokio 基础
-// ============================================================================ 
+// ============================================================================
 //
 // Tokio 是 Rust 最流行的异步运行时。
 //
 // 依赖: tokio = { version = "1", features = ["full"] }
 
-use std::sync::Arc;
+use std::future::Future;
 use std::io;
 use std::pin::Pin;
-use std::future::Future;
-use tokio::sync::{Mutex, RwLock, Barrier, Semaphore, broadcast, OnceCell, mpsc};
-use tokio::time::{sleep, Duration, timeout};
+use std::sync::Arc;
 use tokio::fs::{self, File};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::{broadcast, mpsc, Barrier, Mutex, OnceCell, RwLock, Semaphore};
+use tokio::time::{sleep, timeout, Duration};
 use tokio_stream::StreamExt;
 
-// ============================================================================ 
+// ============================================================================
 // 示例 1: 基本 async 函数
-// ============================================================================ 
+// ============================================================================
 #[allow(dead_code)]
 async fn example1_basic_async() {
     println!("开始异步任务");
@@ -68,10 +68,7 @@ async fn example4_timer() {
         interval.tick().await;
         println!("定时器 tick {}", i + 1);
     }
-    match tokio::time::timeout(
-        Duration::from_secs(2),
-        sleep(Duration::from_secs(3))
-    ).await {
+    match tokio::time::timeout(Duration::from_secs(2), sleep(Duration::from_secs(3))).await {
         Ok(_) => println!("任务完成"),
         Err(_) => println!("任务超时"),
     }
@@ -172,9 +169,9 @@ async fn example9_async_io() -> io::Result<()> {
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 10: 异步 TCP 服务端
-// ============================================================================ 
+// ============================================================================
 #[allow(dead_code)]
 #[tokio::main]
 async fn example10_async_tcp_server() -> io::Result<()> {
@@ -204,9 +201,9 @@ async fn example10_async_tcp_server() -> io::Result<()> {
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 11: 异步 TCP 客户端
-// ============================================================================ 
+// ============================================================================
 #[allow(dead_code)]
 #[tokio::main]
 async fn example11_async_tcp_client() -> io::Result<()> {
@@ -322,14 +319,16 @@ static CONFIG: OnceCell<String> = OnceCell::const_new();
 #[allow(dead_code)]
 #[tokio::main]
 async fn example16_oncecell() {
-    let value = CONFIG.get_or_init(|| async {
-        println!("初始化配置...");
-        "配置值".to_string()
-    }).await;
+    let value = CONFIG
+        .get_or_init(|| async {
+            println!("初始化配置...");
+            "配置值".to_string()
+        })
+        .await;
     println!("配置: {}", value);
-    let value2 = CONFIG.get_or_init(|| async {
-        "不会执行".to_string()
-    }).await;
+    let value2 = CONFIG
+        .get_or_init(|| async { "不会执行".to_string() })
+        .await;
     println!("配置2: {}", value2);
 }
 
@@ -345,7 +344,8 @@ async fn example17_async_iter() {
 async fn unreliable_operation() -> Result<i32, &'static str> {
     tokio::time::sleep(Duration::from_millis(100)).await;
     // if rand::random() {
-    if true { // Simplified for compilation
+    if true {
+        // Simplified for compilation
         Ok(42)
     } else {
         Err("随机失败")
@@ -355,7 +355,7 @@ async fn unreliable_operation() -> Result<i32, &'static str> {
 async fn retry_with_backoff<F, T, E>(
     mut operation: F,
     max_retries: usize,
-    initial_delay: Duration
+    initial_delay: Duration,
 ) -> Result<T, E>
 where
     F: FnMut() -> Pin<Box<dyn Future<Output = Result<T, E>> + Send>>,

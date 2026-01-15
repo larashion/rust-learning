@@ -8,7 +8,8 @@ members = [
     "networking",
     "smart_pointers",
     "traits",
-    "cargo_mastery"
+    "cargo_mastery",
+    "raw_pointers"
 ]
 
 [workspace.dependencies]
