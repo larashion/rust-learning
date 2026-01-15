@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================ 
 // HTTP 客户端 - Reqwest
 // ============================================================================ 
@@ -25,6 +25,7 @@ use futures_util::future::join_all;
 // ============================================================================ 
 // 示例 1: 基本 GET 请求
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example1_get_request() -> Result<(), Box<dyn std::error::Error>> {
     let response = reqwest::get("https://httpbin.org/get").await?;
@@ -40,6 +41,7 @@ async fn example1_get_request() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 2: 发送 POST 请求
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example2_post_request() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
@@ -72,6 +74,7 @@ struct Response {
     json: User,
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example3_json_post() -> Result<(), Box<dyn std::error::Error>> {
     let user = User {
@@ -96,6 +99,7 @@ async fn example3_json_post() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 4: 设置请求头
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example4_headers() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
@@ -116,6 +120,7 @@ async fn example4_headers() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 5: 查询参数（Query Parameters）
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example5_query_params() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
@@ -145,6 +150,7 @@ struct QueryParams {
     search: String,
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example6_struct_query() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
@@ -175,6 +181,7 @@ struct IpInfo {
     origin: String,
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example7_json_response() -> Result<(), Box<dyn std::error::Error>> {
     let response = reqwest::get("https://httpbin.org/ip").await?;
@@ -188,6 +195,7 @@ async fn example7_json_response() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 8: 设置超时
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example8_timeout() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::builder()
@@ -229,6 +237,7 @@ async fn fetch_with_retry(url: &str, max_retries: u32) -> Result<String, Box<dyn
     Err("Max retries exceeded".into())
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example9_retry() -> Result<(), Box<dyn std::error::Error>> {
     let url = "https://httpbin.org/get";
@@ -241,6 +250,7 @@ async fn example9_retry() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 10: Cookie 管理
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example10_cookies() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::builder()
@@ -269,6 +279,7 @@ async fn example10_cookies() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 11: 基本认证（Basic Auth）
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example11_basic_auth() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
@@ -288,6 +299,7 @@ async fn example11_basic_auth() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 12: Bearer Token 认证
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example12_bearer_token() -> Result<(), Box<dyn std::error::Error>> {
     let token = "my_secret_token";
@@ -306,6 +318,7 @@ async fn example12_bearer_token() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 13: 上传文件（Multipart）
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example13_upload_file() -> Result<(), Box<dyn std::error::Error>> {
     // Create a dummy file for the example
@@ -333,6 +346,7 @@ async fn example13_upload_file() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 14: 下载文件
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example14_download_file() -> Result<(), Box<dyn std::error::Error>> {
     let url = "https://httpbin.org/bytes/1024";
@@ -351,6 +365,7 @@ async fn example14_download_file() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 15: 流式下载
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example15_streaming_download() -> Result<(), Box<dyn std::error::Error>> {
     let url = "https://httpbin.org/bytes/1024";
@@ -373,6 +388,7 @@ async fn example15_streaming_download() -> Result<(), Box<dyn std::error::Error>
 // ============================================================================ 
 // 示例 16: 代理支持
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example16_proxy() -> Result<(), Box<dyn std::error::Error>> {
     let proxy = reqwest::Proxy::http("http://127.0.0.1:8080")?;
@@ -391,6 +407,7 @@ async fn example16_proxy() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 17: 连接池配置
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example17_connection_pool() -> Result<(), Box<dyn std::error::Error>> {
     let _client = reqwest::Client::builder()
@@ -410,6 +427,7 @@ async fn example17_connection_pool() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 18: WebSocket 客户端
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example18_websocket() -> Result<(), Box<dyn std::error::Error>> {
     // Note: Reqwest 0.11 doesn't have native WebSocket support unless enabled or used via upgrade.
@@ -429,6 +447,7 @@ async fn example18_websocket() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 // 示例 19: 并发请求
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example19_concurrent_requests() -> Result<(), Box<dyn std::error::Error>> {
     let urls = ["https://httpbin.org/get/1",
@@ -461,6 +480,7 @@ async fn example19_concurrent_requests() -> Result<(), Box<dyn std::error::Error
 // ============================================================================ 
 // 示例 20: 错误处理和状态码
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example20_error_handling() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();

@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================
 // HTTP 服务端 - Axum
 // ============================================================================// 依赖: axum = "0.7", tokio = { version = "1", features = ["full"] }
@@ -32,6 +32,7 @@ async fn hello_world() -> &'static str {
     "Hello, World!"
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example1_hello_world() {
     let app = Router::new().route("/", get(hello_world));
@@ -49,6 +50,7 @@ async fn hello() -> &'static str {
 async fn goodbye() -> &'static str {
     "Goodbye!"
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example2_multiple_routes() {
     let app = Router::new()
@@ -82,6 +84,7 @@ async fn create_user(Json(payload): Json<CreateUser>) -> Json<User> {
         })
     }
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example3_json_api() {
     let app = Router::new().route("/users", post(create_user));
@@ -96,6 +99,7 @@ async fn get_user(Path(user_id): Path<String>) -> String {
 async fn get_post(Path((user_id, post_id)): Path<(String, String)>) -> String {
     format!("用户 ID: {}, 文章 ID: {}", user_id, post_id)
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example4_path_params() {
     let app = Router::new()
@@ -116,6 +120,7 @@ async fn list_users(Query(params): Query<Pagination>) -> String {
     let limit = params.limit.unwrap_or(10);
     format!("第 {} 页，每页 {} 条", page, limit)
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example5_query_params() {
     let app = Router::new().route("/users", get(list_users));
@@ -132,6 +137,7 @@ struct LoginForm {
 async fn login(Form(form): Form<LoginForm>) -> String {
     format!("登录: {}", form.username)
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example6_form_data() {
     let app = Router::new().route("/login", post(login));
@@ -145,6 +151,7 @@ async fn get_headers(headers: AxumHeaderMap) -> String {
     let user_agent = headers.get("user-agent").and_then(|v| v.to_str().ok()).unwrap_or("Unknown");
     format!("User-Agent: {}", user_agent)
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example7_headers() {
     let app = Router::new().route("/headers", get(get_headers));
@@ -161,6 +168,7 @@ async fn get_counter(State(state): State<Arc<AppState>>) -> String {
     *counter += 1;
     format!("计数: {}", *counter)
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example8_state() {
     let state = Arc::new(AppState {
@@ -188,6 +196,7 @@ async fn my_middleware(
 async fn hello_middleware() -> &'static str {
     "Hello with middleware!"
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example9_middleware() {
     let app = Router::new()
@@ -201,6 +210,7 @@ async fn example9_middleware() {
 async fn cors_handler() -> &'static str {
     "CORS enabled!"
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example10_cors() {
     let cors = CorsLayer::new()
@@ -215,6 +225,7 @@ async fn example10_cors() {
     axum::serve(listener, app).await.unwrap();
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example11_static_files() {
     let app = Router::new()
@@ -227,6 +238,7 @@ async fn example11_static_files() {
 async fn hello_logging() -> &'static str {
     "Hello with logging!"
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example12_logging() {
     let app = Router::new()
@@ -244,6 +256,7 @@ async fn handler_with_error() -> Result<Json<serde_json::Value>, StatusCode> {
         Ok(Json(json!({ "message": "成功" })))
     }
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example13_error_handling() {
     let app = Router::new().route("/", get(handler_with_error));
@@ -286,6 +299,7 @@ async fn upload(mut multipart: Multipart) -> Result<String, String> {
         Ok(format!("上传成功: {:?}", uploaded_files))
     }
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example14_file_upload() {
     let app = Router::new().route("/upload", post(upload));
@@ -332,6 +346,7 @@ async fn handle_socket(
         _ = recv_task => {},
     }
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example15_websocket() {
     let (tx, _) = broadcast::channel(100);
@@ -346,6 +361,7 @@ async fn example15_websocket() {
 
 async fn v1_hello() -> &'static str { "API v1" }
 async fn v2_hello() -> &'static str { "API v2" }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example16_nested_routes() {
     let app = Router::new()
@@ -364,6 +380,7 @@ async fn get_users_db() -> String {
     ]);
     serde_json::to_string(&users).unwrap()
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example17_database() {
     let app = Router::new().route("/users", get(get_users_db));
@@ -381,6 +398,7 @@ async fn protected(headers: HeaderMap) -> Result<&'static str, StatusCode> {
     }
     Err(StatusCode::UNAUTHORIZED)
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example18_jwt_auth() {
     let app = Router::new().route("/protected", get(protected));
@@ -392,6 +410,7 @@ async fn example18_jwt_auth() {
 async fn large_response() -> String {
     "A".repeat(10000)
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example19_compression() {
     let app = Router::new()
@@ -419,6 +438,7 @@ async fn rate_limited(
         format!("请求次数: {}", *count)
     }
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example20_rate_limit() {
     let limiter = Arc::new(RateLimiter {

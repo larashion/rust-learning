@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================ 
 // 动态分发 (Dynamic Dispatch) - dyn Trait 对象
 // ============================================================================ 
@@ -551,6 +551,7 @@ fn example14_downcasting() {
 // ============================================================================ 
 // 示例 15: Trait 对象的相等性比较
 // ============================================================================ 
+#[allow(dead_code)]
 fn example15_equality() {
     // Trait 对象不能直接比较，即使 trait 继承了 Eq
 
@@ -598,6 +599,7 @@ impl Cloneable for Data {
     }
 }
 
+#[allow(dead_code)]
 fn example16_clone_trait_object() {
     let original: Box<dyn Cloneable> = Box::new(Data { value: 42 });
     let _cloned = original.clone_box();
@@ -627,6 +629,7 @@ impl Processor for LowercaseProcessor {
     }
 }
 
+#[allow(dead_code)]
 fn example17_trait_object_iterators() {
     let processors: Vec<Box<dyn Processor>> =
         vec![Box::new(UppercaseProcessor), Box::new(LowercaseProcessor)];
@@ -679,6 +682,7 @@ impl Application {
     }
 }
 
+#[allow(dead_code)]
 fn example18_error_handling() {
     let app = Application::new(Box::new(LogErrorHandler));
     app.run();
@@ -708,6 +712,7 @@ impl Serializable for Person {
     }
 }
 
+#[allow(dead_code)]
 fn example19_serialization() {
     let person = Person {
         name: "Alice".to_string(),
@@ -723,6 +728,7 @@ fn example19_serialization() {
 // ============================================================================ 
 // 示例 20: Trait 对象的 Send 和 Sync
 // ============================================================================ 
+#[allow(dead_code)]
 fn example20_send_sync() {
     // Trait 对象可以是 Send 和 Sync，如果 trait 约束满足
     let dog = Dog;

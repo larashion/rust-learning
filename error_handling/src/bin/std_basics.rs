@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 #![allow(clippy::unnecessary_literal_unwrap)]
 // ============================================================================ 
 // Error Handling - 标准库基础
@@ -18,6 +18,7 @@ use std::io::{self, Read};
 // 示例 1: Result 与 ? 运算符
 // ============================================================================ 
 // 传统写法（繁琐）
+#[allow(dead_code)]
 fn read_username_from_file_manual() -> Result<String, io::Error> {
     let f = File::open("hello.txt");
     
@@ -41,6 +42,7 @@ fn read_username_from_file_question_mark() -> Result<String, io::Error> {
 }
 
 // 极简写法：使用 std::fs::read_to_string
+#[allow(dead_code)]
 fn read_username_shortest() -> Result<String, io::Error> {
     std::fs::read_to_string("hello.txt")
 }

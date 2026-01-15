@@ -1,5 +1,4 @@
-#![allow(
-unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================ 
 // Rc<T> - 引用计数智能指针
 // ============================================================================ 
@@ -22,6 +21,7 @@ struct Data {
     value: i32,
 }
 
+#[allow(dead_code)]
 fn example1_basic_rc() {
     let data = Rc::new(Data { value: 42 });
     println!("初始引用计数: {}", Rc::strong_count(&data));
@@ -53,6 +53,7 @@ struct Node {
     children: Vec<Rc<Node>>,
 }
 
+#[allow(dead_code)]
 fn example2_shared_graph() {
     // 创建子节点，可以被多个父节点共享
     let shared_child = Rc::new(Node {
@@ -89,6 +90,7 @@ struct SharedCounter {
     value: RefCell<i32>,
 }
 
+#[allow(dead_code)]
 fn example3_interior_mutability() {
     let counter = Rc::new(SharedCounter {
         value: RefCell::new(0),
@@ -115,6 +117,7 @@ struct ListNode {
     next: Option<Rc<RefCell<ListNode>>>,
 }
 
+#[allow(dead_code)]
 fn example4_linked_list() {
     // 创建节点
     let node3 = Rc::new(RefCell::new(ListNode {
@@ -150,6 +153,7 @@ struct CycleNode {
     next: RefCell<Option<Rc<CycleNode>>>,
 }
 
+#[allow(dead_code)]
 fn example5_reference_cycle() {
     // 创建节点
     let a = Rc::new(CycleNode {
@@ -176,6 +180,7 @@ fn example5_reference_cycle() {
 // ============================================================================ 
 // 示例 6: Rc::make_mut - 写时复制（Copy-on-Write）
 // ============================================================================ 
+#[allow(dead_code)]
 fn example6_make_mut() {
     let mut data = Rc::new(vec![1, 2, 3]);
     println!("初始数据: {:?}", data);
