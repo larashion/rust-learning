@@ -308,7 +308,7 @@ fn find_files(dir: &str, extension: &str) -> Vec<PathBuf> {
 
             if entry_path.is_dir() {
                 results.extend(find_files(entry_path.to_str().unwrap(), extension));
-            } else if entry_path.extension().map_or(false, |ext| ext == extension) {
+            } else if entry_path.extension().is_some_and(|ext| ext == extension) {
                 results.push(entry_path);
             }
         }

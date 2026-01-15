@@ -184,7 +184,7 @@ fn example6_nested_refcell() {
     }
 
     {
-        let mut inner = outer.inner.borrow_mut();
+        let inner = outer.inner.borrow_mut();
         *inner.value.borrow_mut() = 20;
     }
 

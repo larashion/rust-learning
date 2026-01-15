@@ -1,7 +1,7 @@
+#![allow(unused)]
 // ============================================================================
 // HTTP 服务端 - Axum
-// ============================================================================
-// 依赖: axum = "0.7", tokio = { version = "1", features = ["full"] }
+// ============================================================================// 依赖: axum = "0.7", tokio = { version = "1", features = ["full"] }
 
 use axum::routing::{get, post};
 use axum::Router;
@@ -12,9 +12,8 @@ use axum::http::{Request, StatusCode, HeaderMap};
 use axum::response::{Response, IntoResponse};
 use axum::middleware::{self, Next};
 use axum::Form;
-use tokio::net::TcpListener;
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
+use serde_json::json;
 use std::sync::Arc;
 use tokio::sync::{Mutex, broadcast};
 use std::time::Instant;
@@ -254,6 +253,8 @@ async fn example13_error_handling() {
 }
 
 async fn upload(mut multipart: Multipart) -> Result<String, String> {
+    let mut uploaded_files = Vec::new();
+
     while let Some(field) = match multipart.next_field().await {
         Ok(f) => f,
         Err(e) => return Err(e.to_string()),
@@ -276,10 +277,14 @@ async fn upload(mut multipart: Multipart) -> Result<String, String> {
             return Err(e.to_string());
         }
 
-        return Ok(format!("上传成功: {}", path));
+        uploaded_files.push(path);
     }
 
-    Ok("没有文件".to_string())
+    if uploaded_files.is_empty() {
+        Ok("没有文件".to_string())
+    } else {
+        Ok(format!("上传成功: {:?}", uploaded_files))
+    }
 }
 #[tokio::main]
 async fn example14_file_upload() {
@@ -306,7 +311,7 @@ async fn handle_socket(
     let (mut sender, mut receiver) = socket.split();
     let mut rx = state.tx.subscribe();
 
-    let mut send_task = tokio::spawn(async move {
+    let send_task = tokio::spawn(async move {
         while let Ok(msg) = rx.recv().await {
             if sender.send(axum::extract::ws::Message::Text(msg)).await.is_err() {
                 break;
@@ -314,7 +319,7 @@ async fn handle_socket(
         }
     });
 
-    let mut recv_task = tokio::spawn(async move {
+    let recv_task = tokio::spawn(async move {
         while let Some(Ok(msg)) = receiver.next().await {
             if let axum::extract::ws::Message::Text(text) = msg {
                 println!("收到: {}", text);

@@ -1,3 +1,4 @@
+#![allow(unused)]
 // ============================================================================ 
 // HTTP 客户端 - Reqwest
 // ============================================================================ 
@@ -14,15 +15,12 @@
 //
 // 依赖：reqwest = { version = "0.11", features = ["json"] }
 
-use reqwest;
-use tokio;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
-use tokio::io::{self, AsyncWriteExt};
+use tokio::io::AsyncWriteExt;
 use futures_util::stream::StreamExt;
 use futures_util::SinkExt;
 use futures_util::future::join_all;
-use reqwest::Client;
 
 // ============================================================================ 
 // 示例 1: 基本 GET 请求
@@ -250,7 +248,7 @@ async fn example10_cookies() -> Result<(), Box<dyn std::error::Error>> {
         .build()?;
 
     // 设置 Cookie
-    let response: reqwest::Response = client
+    let _response: reqwest::Response = client
         .post("https://httpbin.org/cookies/set")
         .query(&[("key", "value")])
         .send()
@@ -313,7 +311,7 @@ async fn example13_upload_file() -> Result<(), Box<dyn std::error::Error>> {
     // Create a dummy file for the example
     tokio::fs::write("test.txt", "Hello World").await?;
 
-    let file = tokio::fs::File::open("test.txt").await?;
+    let _file = tokio::fs::File::open("test.txt").await?;
 
     // Now reqwest::multipart::Form should be available because I added the feature
     let form = reqwest::multipart::Form::new()
@@ -379,7 +377,7 @@ async fn example15_streaming_download() -> Result<(), Box<dyn std::error::Error>
 async fn example16_proxy() -> Result<(), Box<dyn std::error::Error>> {
     let proxy = reqwest::Proxy::http("http://127.0.0.1:8080")?;
 
-    let client = reqwest::Client::builder()
+    let _client = reqwest::Client::builder()
         .proxy(proxy)
         .build()?;
 
@@ -395,7 +393,7 @@ async fn example16_proxy() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 #[tokio::main]
 async fn example17_connection_pool() -> Result<(), Box<dyn std::error::Error>> {
-    let client = reqwest::Client::builder()
+    let _client = reqwest::Client::builder()
         .pool_idle_timeout(Duration::from_secs(90))
         .pool_max_idle_per_host(10)
         .build()?;
@@ -433,16 +431,14 @@ async fn example18_websocket() -> Result<(), Box<dyn std::error::Error>> {
 // ============================================================================ 
 #[tokio::main]
 async fn example19_concurrent_requests() -> Result<(), Box<dyn std::error::Error>> {
-    let urls = vec![
-        "https://httpbin.org/get/1",
+    let urls = ["https://httpbin.org/get/1",
         "https://httpbin.org/get/2",
-        "https://httpbin.org/get/3",
-    ];
+        "https://httpbin.org/get/3"];
 
     let client = reqwest::Client::new();
 
-    let fetches = urls.iter().map(|&url| {
-        let client = client.clone();
+    let fetches = urls.iter().map(|&_url| {
+        let _client = client.clone();
         async move {
             // let response = client.get(url).send().await?;
             // Ok::<_, reqwest::Error>(response.text().await?)
