@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================ 
 // Lifetimes - 结构体与方法
 // ============================================================================ 
@@ -42,6 +42,7 @@ impl<'a> ImportantExcerpt<'a> {
     // 省略规则 3：如果有 &self 或 &mut self，那么 self 的生命周期会赋给所有输出生命周期。
     
     // 这里应用了规则 1：不需要给 level 标注
+    #[allow(dead_code)]
     fn level(&self) -> i32 { 
         3
     }

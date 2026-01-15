@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================ 
 // 异步运行时 - Tokio 基础
 // ============================================================================ 
@@ -21,6 +21,7 @@ use tokio_stream::StreamExt;
 // ============================================================================ 
 // 示例 1: 基本 async 函数
 // ============================================================================ 
+#[allow(dead_code)]
 async fn example1_basic_async() {
     println!("开始异步任务");
     async fn say_hello() {
@@ -30,11 +31,13 @@ async fn example1_basic_async() {
     println!("异步任务完成");
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example2_tokio_main() {
     println!("Tokio 运行时已启动");
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example3_spawn() {
     println!("主任务");
@@ -54,6 +57,7 @@ async fn example3_spawn() {
     println!("所有任务完成");
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example4_timer() {
     println!("开始计时");
@@ -73,6 +77,7 @@ async fn example4_timer() {
     }
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example5_channel() {
     let (tx, mut rx) = mpsc::channel(100);
@@ -88,6 +93,7 @@ async fn example5_channel() {
     println!("通道关闭");
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example6_async_mutex() {
     let data = Arc::new(Mutex::new(0));
@@ -115,12 +121,14 @@ async fn task2() -> i32 {
     sleep(Duration::from_secs(2)).await;
     2
 }
+#[allow(dead_code)]
 #[tokio::main]
 async fn example7_join() {
     let (result1, result2) = tokio::join!(task1(), task2());
     println!("结果: {} {}", result1, result2);
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example8_select() {
     let (tx1, mut rx1) = mpsc::channel(10);
@@ -143,6 +151,7 @@ async fn example8_select() {
     }
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example9_async_io() -> io::Result<()> {
     // 异步写入文件
@@ -166,6 +175,7 @@ async fn example9_async_io() -> io::Result<()> {
 // ============================================================================ 
 // 示例 10: 异步 TCP 服务端
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example10_async_tcp_server() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8080").await?;
@@ -197,6 +207,7 @@ async fn example10_async_tcp_server() -> io::Result<()> {
 // ============================================================================ 
 // 示例 11: 异步 TCP 客户端
 // ============================================================================ 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example11_async_tcp_client() -> io::Result<()> {
     // 尝试连接，如果失败则忽略
@@ -218,6 +229,7 @@ async fn example11_async_tcp_client() -> io::Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example12_barrier() {
     let barrier = Arc::new(Barrier::new(3));
@@ -236,6 +248,7 @@ async fn example12_barrier() {
     }
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example13_semaphore() {
     let semaphore = Arc::new(Semaphore::new(3));
@@ -255,6 +268,7 @@ async fn example13_semaphore() {
     }
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example14_broadcast() {
     let (tx, mut rx1) = broadcast::channel(10);
@@ -278,6 +292,7 @@ async fn example14_broadcast() {
     tokio::time::sleep(Duration::from_secs(1)).await;
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example15_rwlock() {
     let data = Arc::new(RwLock::new(0));
@@ -304,6 +319,7 @@ async fn example15_rwlock() {
 }
 
 static CONFIG: OnceCell<String> = OnceCell::const_new();
+#[allow(dead_code)]
 #[tokio::main]
 async fn example16_oncecell() {
     let value = CONFIG.get_or_init(|| async {
@@ -317,6 +333,7 @@ async fn example16_oncecell() {
     println!("配置2: {}", value2);
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example17_async_iter() {
     let mut stream = tokio_stream::iter(vec![1, 2, 3, 4, 5]);
@@ -358,6 +375,7 @@ where
     unreachable!()
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example18_retry() {
     match timeout(Duration::from_secs(5), unreliable_operation()).await {
@@ -371,6 +389,7 @@ async fn example18_retry() {
 use tokio::signal::unix::{signal, SignalKind};
 
 #[cfg(unix)]
+#[allow(dead_code)]
 #[tokio::main]
 async fn example19_signal() {
     let mut sigterm = signal(SignalKind::terminate()).unwrap();
@@ -380,11 +399,13 @@ async fn example19_signal() {
 }
 
 #[cfg(windows)]
+#[allow(dead_code)]
 #[tokio::main]
 async fn example19_signal() {
     println!("Unix 信号处理仅在 Linux/Mac 上可用");
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn example20_simple_http() -> io::Result<()> {
     if let Ok(mut stream) = TcpStream::connect("example.com:80").await {

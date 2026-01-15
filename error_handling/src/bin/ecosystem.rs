@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================ 
 // Error Handling - 生态系统 (thiserror & anyhow)
 // ============================================================================ 
@@ -31,9 +31,11 @@ mod my_library {
         #[error("数据格式错误: {0}")]
         FormatError(String),
         
+        #[allow(dead_code)]
         #[error("未找到键值: {0}")]
         NotFound(String),
         
+        #[allow(dead_code)]
         #[error("未知错误")]
         Unknown,
     }

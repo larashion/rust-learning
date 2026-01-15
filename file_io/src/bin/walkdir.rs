@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================ 
 // Walkdir - 高效目录遍历
 // ============================================================================ 
@@ -94,6 +94,7 @@ impl WalkEntry {
         self.path.is_dir()
     }
 
+    #[allow(dead_code)]
     fn is_file(&self) -> bool {
         self.path.is_file()
     }

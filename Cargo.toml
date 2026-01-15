@@ -6,7 +6,9 @@ members = [
     "file_io",
     "lifetimes",
     "networking",
-    "smart_pointers"
+    "smart_pointers",
+    "traits",
+    "cargo_mastery"
 ]
 
 [workspace.dependencies]

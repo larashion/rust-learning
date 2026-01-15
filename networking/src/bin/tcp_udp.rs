@@ -1,4 +1,4 @@
-#![allow(unused)]
+// #![allow(unused)] // Cleaned up: Removed global suppression
 // ============================================================================ 
 // TCP/UDP 网络编程基础 (std::net)
 // ============================================================================ 
@@ -20,6 +20,7 @@ use std::time::Duration;
 // ============================================================================ 
 // 示例 1: TCP 服务端基本实现
 // ============================================================================ 
+#[allow(dead_code)]
 fn example1_tcp_server() -> io::Result<()> {
     // 绑定到本地端口 8080
     let listener = TcpListener::bind("127.0.0.1:8080")?;
@@ -43,6 +44,7 @@ fn example1_tcp_server() -> io::Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 fn handle_client(mut stream: TcpStream) -> io::Result<()> {
     // 读取数据
     let mut buffer = [0; 1024];
@@ -60,6 +62,7 @@ fn handle_client(mut stream: TcpStream) -> io::Result<()> {
 // ============================================================================ 
 // 示例 2: TCP 客户端基本实现
 // ============================================================================ 
+#[allow(dead_code)]
 fn example2_tcp_client() -> io::Result<()> {
     // 连接到服务端
     let mut stream = TcpStream::connect("127.0.0.1:8080")?;
@@ -82,6 +85,7 @@ fn example2_tcp_client() -> io::Result<()> {
 // ============================================================================ 
 // 示例 3: TCP 回显服务器（Echo Server）
 // ============================================================================ 
+#[allow(dead_code)]
 fn example3_echo_server() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8081")?;
     println!("Echo 服务端监听在: 127.0.0.1:8081");
@@ -107,6 +111,7 @@ fn example3_echo_server() -> io::Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 fn handle_echo_client(stream: TcpStream) -> io::Result<()> {
     let mut writer = stream.try_clone()?;
     let reader = BufReader::new(&stream);
@@ -129,6 +134,7 @@ fn handle_echo_client(stream: TcpStream) -> io::Result<()> {
 // ============================================================================ 
 // 示例 4: UDP 服务端
 // ============================================================================ 
+#[allow(dead_code)]
 fn example4_udp_server() -> io::Result<()> {
     // 绑定 UDP Socket
     let socket = UdpSocket::bind("127.0.0.1:8082")?;
@@ -151,6 +157,7 @@ fn example4_udp_server() -> io::Result<()> {
 // ============================================================================ 
 // 示例 5: UDP 客户端
 // ============================================================================ 
+#[allow(dead_code)]
 fn example5_udp_client() -> io::Result<()> {
     let socket = UdpSocket::bind("127.0.0.1:0")?;
 
@@ -197,6 +204,7 @@ fn example6_socket_address() {
 // ============================================================================ 
 // 示例 7: 非阻塞 Socket（设置超时）
 // ============================================================================ 
+#[allow(dead_code)]
 fn example7_timeout_socket() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8083")?;
 
@@ -232,6 +240,7 @@ fn example7_timeout_socket() -> io::Result<()> {
 // ============================================================================ 
 // 示例 8: 多线程并发处理
 // ============================================================================ 
+#[allow(dead_code)]
 fn example8_concurrent_server() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8084")?;
     println!("并发 TCP 服务端监听在: 127.0.0.1:8084");
@@ -265,6 +274,7 @@ fn example8_concurrent_server() -> io::Result<()> {
 // ============================================================================ 
 // 示例 9: 简单的聊天服务器
 // ============================================================================ 
+#[allow(dead_code)]
 fn example9_chat_server() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8085")?;
     println!("聊天服务器监听在: 127.0.0.1:8085");
@@ -316,6 +326,7 @@ fn example11_local_ip() {
 // ============================================================================ 
 // 示例 12: TCP 保持连接（Keep-alive）
 // ============================================================================ 
+#[allow(dead_code)]
 fn example12_keepalive() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8086")?;
 
@@ -332,6 +343,7 @@ fn example12_keepalive() -> io::Result<()> {
 // ============================================================================ 
 // 示例 13: TCP 无延迟（No delay）
 // ============================================================================ 
+#[allow(dead_code)]
 fn example13_no_delay() -> io::Result<()> {
     let stream = TcpStream::connect("127.0.0.1:8080")?;
 
@@ -345,6 +357,7 @@ fn example13_no_delay() -> io::Result<()> {
 // ============================================================================ 
 // 示例 14: 检测连接断开
 // ============================================================================ 
+#[allow(dead_code)]
 fn example14_detect_disconnect() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8087")?;
 
@@ -373,6 +386,7 @@ fn example14_detect_disconnect() -> io::Result<()> {
 // ============================================================================ 
 // 示例 15: 广播 UDP 消息
 // ============================================================================ 
+#[allow(dead_code)]
 fn example15_udp_broadcast() -> io::Result<()> {
     // 创建 UDP Socket
     let socket = UdpSocket::bind("0.0.0.0:0")?;
@@ -394,6 +408,7 @@ fn example15_udp_broadcast() -> io::Result<()> {
 // ============================================================================ 
 // 示例 16: 多播 UDP (Multicast)
 // ============================================================================ 
+#[allow(dead_code)]
 fn example16_udp_multicast() -> io::Result<()> {
     // 多播地址
     let multicast_addr = "239.255.255.250:1900";
@@ -416,6 +431,7 @@ fn example16_udp_multicast() -> io::Result<()> {
 // ============================================================================ 
 // 示例 17: TCP 性能测试（简单版）
 // ============================================================================ 
+#[allow(dead_code)]
 fn example17_tcp_benchmark() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8088")?;
 
@@ -461,6 +477,7 @@ fn example17_tcp_benchmark() -> io::Result<()> {
 // ============================================================================ 
 // 示例 18: 简单的代理服务器
 // ============================================================================ 
+#[allow(dead_code)]
 fn example18_simple_proxy() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8089")?;
     println!("代理服务器监听在: 127.0.0.1:8089");
@@ -479,6 +496,7 @@ fn example18_simple_proxy() -> io::Result<()> {
 // ============================================================================ 
 // 示例 19: 读取大文件（分块传输）
 // ============================================================================ 
+#[allow(dead_code)]
 fn example19_chunked_transfer() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8090")?;
 
@@ -512,6 +530,7 @@ fn example19_chunked_transfer() -> io::Result<()> {
 // ============================================================================ 
 // 示例 20: 心跳检测（Heartbeat）
 // ============================================================================ 
+#[allow(dead_code)]
 fn example20_heartbeat() -> io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8091")?;
 
