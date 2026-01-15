@@ -12,8 +12,8 @@ members = [
 [workspace.dependencies]
 walkdir = "2.3"
 tokio = { version = "1", features = ["full"] }
-reqwest = { version = "0.12", features = ["json", "stream"] }
-axum = "0.7"
+reqwest = { version = "0.12", features = ["json", "stream", "multipart", "cookies"] }
+axum = { version = "0.7", features = ["multipart", "ws"] }
 tokio-tungstenite = "0.20"
 futures-util = "0.3"
 tokio-stream = "0.1"

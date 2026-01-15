@@ -1,6 +1,8 @@
-// ============================================================================
+#![allow(unused)]
+#![allow(clippy::unnecessary_literal_unwrap)]
+// ============================================================================ 
 // Error Handling - 标准库基础
-// ============================================================================
+// ============================================================================ 
 //
 // Rust 没有异常（Exception），而是使用 Result<T, E> 和 Option<T> 枚举来处理错误和空值。
 //
@@ -19,10 +21,7 @@ use std::io::{self, Read};
 fn read_username_from_file_manual() -> Result<String, io::Error> {
     let f = File::open("hello.txt");
     
-    let mut f = match f {
-        Ok(file) => file,
-        Err(e) => return Err(e),
-    };
+    let mut f = f?;
     
     let mut s = String::new();
     match f.read_to_string(&mut s) {

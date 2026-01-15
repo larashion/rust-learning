@@ -177,7 +177,7 @@ fn example8_thread_id() {
 use std::cell::RefCell;
 
 thread_local! {
-    static THREAD_LOCAL: RefCell<i32> = RefCell::new(0);
+    static THREAD_LOCAL: RefCell<i32> = const { RefCell::new(0) };
 }
 
 fn example9_thread_local_storage() {

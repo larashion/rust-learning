@@ -102,8 +102,7 @@ fn example4_file_open_options() -> io::Result<()> {
 // ============================================================================
 fn example5_read_lines() -> io::Result<()> {
     let filename = "test_lines.txt";
-    let lines = vec
-!["第一行", "第二行", "第三行"];
+    let lines = ["第一行", "第二行", "第三行"];
     fs::write(filename, lines.join("\n"))?;
 
     // 打开文件

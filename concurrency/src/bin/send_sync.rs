@@ -11,7 +11,7 @@
 // 4. 违反安全性规则会有编译错误
 // 5. unsafe impl 需要确保安全性不变式
 
-use std::marker::{PhantomData, Send as SendMarker, Sync as SyncMarker};
+use std::marker::PhantomData;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -36,7 +36,7 @@ fn example1_send_trait() {
 // ============================================================================
 fn example2_non_send() {
     // Rc 不是 Send，因为它使用非原子引用计数
-    let data = Rc::new(42);
+    let _data = Rc::new(42);
 
     // 以下代码会编译错误
     // let handle = thread::spawn(move || {
@@ -242,8 +242,7 @@ fn example10_function_pointer() {
 // 示例 11: 闭包的线程安全性
 // ============================================================================
 fn example11_closure_thread_safety() {
-    let data = vec
-![1, 2, 3, 4, 5];
+    let data = [1, 2, 3, 4, 5];
 
     // 闭包捕获数据，move 转移所有权
     // 因为 Vec<i32> 是 Send，闭包也是 Send
@@ -338,7 +337,7 @@ fn example14_check_send_sync() {
 // 示例 15: 使用 where 子句约束线程安全性
 // ============================================================================
 fn example15_where_clause() {
-    fn spawn_with_check<T: Send + 'static>(data: T) {
+    fn spawn_with_check<T: Send + 'static>(_data: T) {
         let handle = thread::spawn(move || {
             println!("接收数据");
             // data 在这里可以使用

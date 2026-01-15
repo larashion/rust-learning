@@ -270,7 +270,7 @@ fn example10_detect_closed() {
 
     thread::spawn(move || {
         for i in 0..5 {
-            if let Err(_) = tx.send(i) {
+            if tx.send(i).is_err() {
                 println!("发送者: 通道已关闭，无法发送 {}", i);
                 break;
             }

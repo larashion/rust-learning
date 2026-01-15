@@ -1,6 +1,7 @@
-// ============================================================================
+#![allow(unused)]
+// ============================================================================ 
 // Weak<T> - 弱引用智能指针
-// ============================================================================
+// ============================================================================ 
 //
 // Weak<T> 用于打破引用循环，防止内存泄漏。
 //
@@ -13,12 +14,12 @@
 
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::thread;
 
-// ============================================================================
+// ============================================================================ 
 // 示例 1: 基本 Weak 用法
-// ============================================================================
+// ============================================================================ 
 fn example1_basic_weak() {
     let strong = Rc::new(42);
     let weak = Rc::downgrade(&strong);
@@ -45,21 +46,21 @@ fn example1_basic_weak() {
     println!("弱引用计数（drop 后）: {}", weak.weak_count()); // weak 仍然存在
 }
 
-// ============================================================================
+// ============================================================================ 
 // 示例 2: 避免引用循环 - 树结构
-// ============================================================================
+// ============================================================================ 
 #[derive(Debug)]
 struct TreeNode {
     value: i32,
     // 子节点使用强引用
-    children: Vec<Rc<RefCell<TreeNode>>>,
+    children: Vec<Rc<RefCell<TreeNode>>>, 
     // 父节点使用弱引用，避免循环
-    parent: RefCell<Weak<RefCell<TreeNode>>>,
+    parent: RefCell<Weak<RefCell<TreeNode>>>, 
 }
 
 impl TreeNode {
     fn new(value: i32) -> Rc<RefCell<TreeNode>> {
-        Rc::new(RefCell::new(TreeNode {
+        Rc::new(RefCell::new(TreeNode { 
             value,
             children: vec![],
             parent: RefCell::new(Weak::new()),
@@ -99,23 +100,23 @@ fn example2_tree_without_cycles() {
     println!("所有节点已被释放（无内存泄漏）");
 }
 
-// ============================================================================
+// ============================================================================ 
 // 示例 3: 有循环引用的树（对比）
-// ============================================================================
+// ============================================================================ 
 struct CycleNode {
     value: i32,
     parent: RefCell<Option<Rc<RefCell<CycleNode>>>>,
-    children: Vec<Rc<RefCell<CycleNode>>>,
+    children: Vec<Rc<RefCell<CycleNode>>>, 
 }
 
 fn example3_tree_with_cycles() {
-    let root = Rc::new(RefCell::new(CycleNode {
+    let root = Rc::new(RefCell::new(CycleNode { 
         value: 1,
         parent: RefCell::new(None),
         children: vec![],
     }));
 
-    let child = Rc::new(RefCell::new(CycleNode {
+    let child = Rc::new(RefCell::new(CycleNode { 
         value: 2,
         parent: RefCell::new(Some(Rc::clone(&root))),
         children: vec![],
@@ -137,12 +138,12 @@ fn example3_tree_with_cycles() {
     println!("内存泄漏！数据未被释放");
 }
 
-// ============================================================================
+// ============================================================================ 
 // 示例 4: 缓存模式
-// ============================================================================
+// ============================================================================ 
 struct Cache {
     // 使用 Weak 允许缓存项被自动清理
-    data: RefCell<Vec<Weak<String>>>,
+    data: RefCell<Vec<Weak<String>>>, 
 }
 
 impl Cache {
@@ -184,9 +185,9 @@ fn example4_cache_pattern() {
     println!("丢弃一个引用后: {:?}", cache.get_valid_items());
 }
 
-// ============================================================================
+// ============================================================================ 
 // 示例 5: Arc + Weak（线程安全）
-// ============================================================================
+// ============================================================================ 
 fn example5_arc_weak() {
     let strong = Arc::new(42);
     let weak = Arc::downgrade(&strong);
@@ -205,18 +206,18 @@ fn example5_arc_weak() {
     handle.join().unwrap();
 }
 
-// ============================================================================
+// ============================================================================ 
 // 示例 6: 双向链表（正确的实现）
-// ============================================================================
+// ============================================================================ 
 struct DoublyLinkedNode {
     value: i32,
     next: RefCell<Option<Rc<RefCell<DoublyLinkedNode>>>>,
-    prev: RefCell<Weak<RefCell<DoublyLinkedNode>>>,
+    prev: RefCell<Weak<RefCell<DoublyLinkedNode>>>, 
 }
 
 impl DoublyLinkedNode {
     fn new(value: i32) -> Rc<RefCell<DoublyLinkedNode>> {
-        Rc::new(RefCell::new(DoublyLinkedNode {
+        Rc::new(RefCell::new(DoublyLinkedNode { 
             value,
             next: RefCell::new(None),
             prev: RefCell::new(Weak::new()),
@@ -262,13 +263,13 @@ fn example6_doubly_linked_list() {
     println!();
 }
 
-// ============================================================================
+// ============================================================================ 
 // 示例 7: Weak 引用计数
-// ============================================================================
+// ============================================================================ 
 fn example7_weak_count() {
     let strong = Rc::new(42);
     let weak1 = Rc::downgrade(&strong);
-    let weak2 = Rc::downgrade(&strong);
+    let _weak2 = Rc::downgrade(&strong);
 
     println!("强引用计数: {}", Rc::strong_count(&strong));
     println!("弱引用计数: {}", Rc::weak_count(&strong));
@@ -280,9 +281,9 @@ fn example7_weak_count() {
     println!("  弱引用计数: {}", Rc::weak_count(&strong));
 }
 
-// ============================================================================
+// ============================================================================ 
 // 主函数
-// ============================================================================
+// ============================================================================ 
 fn main() {
     println!("=== Weak<T> 弱引用智能指针示例 ===\n");
 
