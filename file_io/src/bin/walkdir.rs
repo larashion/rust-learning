@@ -1,7 +1,7 @@
 // #![allow(unused)] // Cleaned up: Removed global suppression
-// ============================================================================ 
+// ============================================================================
 // Walkdir - 高效目录遍历
-// ============================================================================ 
+// ============================================================================
 //
 // walkdir 是一个流行的 Rust crate，用于高效遍历目录树。
 //
@@ -15,16 +15,17 @@
 //
 // 依赖：walkdir = "2.3"
 
-use std::path::Path;
 use std::fs;
 use std::io;
+use std::path::Path;
 
-// ============================================================================ 
+// ============================================================================
 // 示例 1: 基本用法 - 遍历目录树
-// ============================================================================ 
+// ============================================================================
 // 使用方式：walkdir crate
 // Cargo.toml 需要添加: walkdir = "2.3"
 
+#[allow(dead_code)]
 fn example1_basic_walkdir() {
     use walkdir::WalkDir;
 
@@ -39,9 +40,9 @@ fn example1_basic_walkdir() {
     }
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 2: 使用 fs 递归遍历（标准库版本）
-// ============================================================================ 
+// ============================================================================
 fn example2_std_traversal() -> io::Result<()> {
     // 创建测试目录结构
     fs::create_dir_all("test_walkdir/dir1/subdir1")?;
@@ -77,9 +78,9 @@ fn traverse_directory(path: &str, depth: usize) -> io::Result<()> {
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 3: 自定义 WalkDir 实现（简化版）
-// ============================================================================ 
+// ============================================================================
 struct WalkEntry {
     path: std::path::PathBuf,
     depth: usize,
@@ -89,18 +90,9 @@ impl WalkEntry {
     fn file_name(&self) -> Option<&std::ffi::OsStr> {
         self.path.file_name()
     }
-
-    fn is_dir(&self) -> bool {
-        self.path.is_dir()
-    }
-
     #[allow(dead_code)]
     fn is_file(&self) -> bool {
         self.path.is_file()
-    }
-
-    fn path(&self) -> &std::path::Path {
-        &self.path
     }
 }
 
@@ -112,7 +104,11 @@ fn example3_custom_walkdir() -> io::Result<()> {
 
     println!("自定义 WalkDir 实现:");
     for entry in custom_walkdir("test_custom", 3)? {
-        println!("  {} {:?}", "  ".repeat(entry.depth), entry.file_name().unwrap());
+        println!(
+            "  {} {:?}",
+            "  ".repeat(entry.depth),
+            entry.file_name().unwrap()
+        );
     }
 
     // 清理
@@ -126,7 +122,12 @@ fn custom_walkdir(root: &str, max_depth: usize) -> io::Result<Vec<WalkEntry>> {
     Ok(entries)
 }
 
-fn walk_recursive(path: &str, depth: usize, max_depth: usize, entries: &mut Vec<WalkEntry>) -> io::Result<()> {
+fn walk_recursive(
+    path: &str,
+    depth: usize,
+    max_depth: usize,
+    entries: &mut Vec<WalkEntry>,
+) -> io::Result<()> {
     let path_buf = std::path::PathBuf::from(path);
     entries.push(WalkEntry {
         path: path_buf.clone(),
@@ -154,9 +155,9 @@ fn walk_recursive(path: &str, depth: usize, max_depth: usize, entries: &mut Vec<
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 4: 按文件类型过滤
-// ============================================================================ 
+// ============================================================================
 fn example4_filter_by_type() -> io::Result<()> {
     // 创建测试文件
     fs::create_dir_all("test_filter_types/subdir")?;
@@ -204,9 +205,9 @@ fn find_files_recursive(path: &str, ext: &str, results: &mut Vec<String>) -> io:
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 5: 按深度限制
-// ============================================================================ 
+// ============================================================================
 fn example5_depth_limit() -> io::Result<()> {
     // 创建测试目录
     fs::create_dir_all("test_depth/dir1/dir2/dir3")?;
@@ -217,7 +218,11 @@ fn example5_depth_limit() -> io::Result<()> {
 
     println!("限制深度为 2:");
     for entry in custom_walkdir("test_depth", 2)? {
-        println!("  {} {:?}", "  ".repeat(entry.depth), entry.file_name().unwrap());
+        println!(
+            "  {} {:?}",
+            "  ".repeat(entry.depth),
+            entry.file_name().unwrap()
+        );
     }
 
     // 清理
@@ -225,9 +230,9 @@ fn example5_depth_limit() -> io::Result<()> {
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 6: 获取目录大小
-// ============================================================================ 
+// ============================================================================
 fn example6_directory_size() -> io::Result<()> {
     // 创建测试文件
     fs::create_dir_all("test_size/dir1/dir2")?;
@@ -273,9 +278,9 @@ fn walkdir_recursive(path: &Path) -> io::Result<Vec<std::path::PathBuf>> {
     Ok(entries)
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 7: 查找特定文件
-// ============================================================================ 
+// ============================================================================
 fn example7_find_specific_file() -> io::Result<()> {
     // 创建测试文件
     fs::create_dir_all("test_find/subdir")?;
@@ -319,9 +324,9 @@ fn find_file_recursive(path: &str, filename: &str, results: &mut Vec<String>) ->
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 8: 统计文件和目录数量
-// ============================================================================ 
+// ============================================================================
 struct DirectoryStatistics {
     files: usize,
     directories: usize,
@@ -378,9 +383,9 @@ fn get_directory_statistics(path: &str) -> io::Result<DirectoryStatistics> {
     Ok(stats)
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 9: 并行遍历（概念演示）
-// ============================================================================ 
+// ============================================================================
 fn example9_parallel_concept() {
     // 真正的并行遍历需要使用 rayon 等库
     // 这里只演示概念
@@ -392,9 +397,9 @@ fn example9_parallel_concept() {
     println!("  或者使用 rayon 并行处理目录项");
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 10: 处理软链接
-// ============================================================================ 
+// ============================================================================
 fn example10_symbolic_links() -> io::Result<()> {
     // Windows 需要管理员权限创建符号链接
     #[cfg(unix)]
@@ -424,9 +429,9 @@ fn example10_symbolic_links() -> io::Result<()> {
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 11: 按修改时间排序
-// ============================================================================ 
+// ============================================================================
 fn example11_sort_by_modified_time() -> io::Result<()> {
     // 创建测试文件
     fs::create_dir_all("test_sort")?;
@@ -436,11 +441,13 @@ fn example11_sort_by_modified_time() -> io::Result<()> {
     }
 
     println!("按修改时间排序:");
-    let mut entries: Vec<_> = fs::read_dir("test_sort")?
-        .collect::<Result<Vec<_>, _>>()?;
+    let mut entries: Vec<_> = fs::read_dir("test_sort")?.collect::<Result<Vec<_>, _>>()?;
 
     entries.sort_by_key(|entry| {
-        entry.metadata().and_then(|m| m.modified()).unwrap_or(std::time::SystemTime::UNIX_EPOCH)
+        entry
+            .metadata()
+            .and_then(|m| m.modified())
+            .unwrap_or(std::time::SystemTime::UNIX_EPOCH)
     });
 
     for entry in entries {
@@ -452,9 +459,9 @@ fn example11_sort_by_modified_time() -> io::Result<()> {
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 12: 跳过特定目录（如 .git, node_modules）
-// ============================================================================ 
+// ============================================================================
 fn example12_skip_directories() -> io::Result<()> {
     // 创建测试目录
     fs::create_dir_all("test_skip/.git")?;
@@ -463,8 +470,12 @@ fn example12_skip_directories() -> io::Result<()> {
     fs::write("test_skip/file.txt", "test")?;
 
     println!("跳过特定目录的遍历:");
-    for entry in custom_walkdir_skip("test_skip", 10, &[ ".git", "node_modules" ])? {
-        println!("  {} {:?}", "  ".repeat(entry.depth), entry.file_name().unwrap());
+    for entry in custom_walkdir_skip("test_skip", 10, &[".git", "node_modules"])? {
+        println!(
+            "  {} {:?}",
+            "  ".repeat(entry.depth),
+            entry.file_name().unwrap()
+        );
     }
 
     // 清理
@@ -472,7 +483,11 @@ fn example12_skip_directories() -> io::Result<()> {
     Ok(())
 }
 
-fn custom_walkdir_skip(root: &str, max_depth: usize, skip_dirs: &[&str]) -> io::Result<Vec<WalkEntry>> {
+fn custom_walkdir_skip(
+    root: &str,
+    max_depth: usize,
+    skip_dirs: &[&str],
+) -> io::Result<Vec<WalkEntry>> {
     let mut entries = Vec::new();
     walk_recursive_skip(root, 0, max_depth, skip_dirs, &mut entries)?;
     Ok(entries)
@@ -483,7 +498,7 @@ fn walk_recursive_skip(
     depth: usize,
     max_depth: usize,
     skip_dirs: &[&str],
-    entries: &mut Vec<WalkEntry>
+    entries: &mut Vec<WalkEntry>,
 ) -> io::Result<()> {
     let path_buf = std::path::PathBuf::from(path);
 
@@ -506,7 +521,13 @@ fn walk_recursive_skip(
                 let entry_path = entry.path();
 
                 if entry_path.is_dir() {
-                    walk_recursive_skip(entry_path.to_str().unwrap(), depth + 1, max_depth, skip_dirs, entries)?;
+                    walk_recursive_skip(
+                        entry_path.to_str().unwrap(),
+                        depth + 1,
+                        max_depth,
+                        skip_dirs,
+                        entries,
+                    )?;
                 } else {
                     entries.push(WalkEntry {
                         path: entry_path,
@@ -520,9 +541,9 @@ fn walk_recursive_skip(
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 13: 查找大文件
-// ============================================================================ 
+// ============================================================================
 fn example13_find_large_files() -> io::Result<()> {
     // 创建测试文件
     fs::create_dir_all("test_large")?;
@@ -564,9 +585,9 @@ fn find_large_files(root: &str, threshold: u64) -> io::Result<Vec<String>> {
     Ok(large_files)
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 14: 复制整个目录树
-// ============================================================================ 
+// ============================================================================
 fn example14_copy_tree() -> io::Result<()> {
     // 创建测试目录
     fs::create_dir_all("test_copy_tree/src")?;
@@ -578,7 +599,11 @@ fn example14_copy_tree() -> io::Result<()> {
 
     println!("目标目录内容:");
     for entry in custom_walkdir("test_copy_tree_dst", 10)? {
-        println!("  {} {:?}", "  ".repeat(entry.depth), entry.file_name().unwrap());
+        println!(
+            "  {} {:?}",
+            "  ".repeat(entry.depth),
+            entry.file_name().unwrap()
+        );
     }
 
     // 清理
@@ -608,9 +633,9 @@ fn copy_tree(src: &str, dst: &str) -> io::Result<()> {
     Ok(())
 }
 
-// ============================================================================ 
+// ============================================================================
 // 示例 15: 实际应用 - 代码文件统计
-// ============================================================================ 
+// ============================================================================
 fn example15_code_statistics() -> io::Result<()> {
     // 创建测试项目
     fs::create_dir_all("test_project/src")?;
@@ -670,9 +695,9 @@ fn get_code_statistics(root: &str) -> io::Result<CodeStats> {
     Ok(stats)
 }
 
-// ============================================================================ 
+// ============================================================================
 // 主函数
-// ============================================================================ 
+// ============================================================================
 fn main() {
     println!("=== Rust 目录遍历 (Walkdir 风格) 示例 ===\n");
 
