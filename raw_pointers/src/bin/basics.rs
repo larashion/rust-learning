@@ -27,6 +27,9 @@ fn main() {
     example_pointer_arithmetic();
     println!();
 
+    example_address_printing();
+    println!();
+
     println!("注意：裸指针主要用于与 C 语言交互 (FFI) 或构建底层抽象（如 Vec, Box 等）。");
     println!("在日常 Rust 编程中，应尽量避免使用。");
 }
@@ -91,4 +94,32 @@ fn example_pointer_arithmetic() {
         let ptr_4 = ptr.add(4);
         println!("ptr + 4 指向: {}", *ptr_4); // arr[4]
     }
+}
+
+fn example_address_printing() {
+    println!("--- 4. 地址打印的奥秘 (Stack vs Heap) ---");
+    
+    // Case 1: 简单的栈变量
+    let x = 42;
+    println!("栈上的变量 (i32):");
+    println!("  &x           (引用 - 栈地址): {:p}", &x);
+    println!("  &x as *const (裸指针 - 栈地址): {:p}", &x as *const i32);
+
+    println!();
+
+    // Case 2: 堆分配的智能指针 (Vec/String)
+    // 这是一个非常重要的区别：
+    // - s 变量本身（包含指针、长度、容量）存储在栈上
+    // - s 指向的实际字符串数据存储在堆上
+    let s = String::from("Hello Pointer");
+    
+    println!("堆分配的变量 (String):");
+    println!("  &s           (s 变量本身在栈上的地址): {:p}", &s);
+    println!("  s.as_ptr()   (实际数据在堆上的地址):   {:p}", s.as_ptr());
+    
+    // 验证：slice 的指针应该指向堆
+    let slice_ptr = s.as_str().as_ptr();
+    println!("  &s[..]       (切片的指针 - 堆地址):    {:p}", slice_ptr);
+
+    println!("\n  [观察]: 栈地址通常很高 (如 0x7ff...), 堆地址通常较低 (如 0x55x...)，两者相距甚远。");
 }

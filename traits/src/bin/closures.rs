@@ -59,7 +59,7 @@ fn quick_sort_recursion(arr: &mut [i32]) {
         return;
     }
     let pivot = partition(arr);
-    let (left, right) = arr.split_at_mut(pivot + 1);
+    let (left, right) = arr.split_at_mut(pivot);
     quick_sort_recursion(left);
     quick_sort_recursion(right);
 }
@@ -80,26 +80,26 @@ fn insertion_sort(arr: &mut [i32]) {
 
 fn partition(arr: &mut [i32]) -> usize {
     let mut l = 0;
-    let mut r = arr.len() - 1;
-    // 随机选择 pivot，范围 [l, r)，即排除最后一个元素以防无限递归
-    let pivot_index = rand::rng().random_range(l..r);
+    let mut r = arr.len();
+    // 随机选择 pivot
+    let pivot_index = rand::rng().random_range(0..r);
     let pivot_value = arr[pivot_index];
 
     loop {
-        while arr[l] < pivot_value {
+        while l < r && arr[l] < pivot_value {
             l += 1;
         }
-        while arr[r] > pivot_value {
+        while l < r && arr[r - 1] > pivot_value {
             r -= 1;
         }
         if l >= r {
             break;
         }
-        arr.swap(l, r);
+        arr.swap(l, r - 1);
         l += 1;
         r -= 1;
     }
-    r
+    l
 }
 // 高阶函数：接受一个闭包 F
 // 我们强制要求 F 是 Fn (不可变借用)，因为这是一个纯粹的计算函数，
