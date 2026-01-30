@@ -38,13 +38,10 @@ fn selection_sort(arr: &mut [i32]) {
                 min_idx = j;
             }
         }
-        if i == min_idx {
-            continue;
-        }
         arr.swap(i, min_idx);
     }
 }
-
+const THRESHOLD: usize = 47;
 pub fn quick_sort(arr: &mut [i32]) {
     let n = arr.len();
     if n < 2 {
@@ -54,7 +51,7 @@ pub fn quick_sort(arr: &mut [i32]) {
 }
 
 fn quick_sort_recursion(arr: &mut [i32]) {
-    if arr.len() < 60 {
+    if arr.len() < THRESHOLD {
         insertion_sort(arr);
         return;
     }
@@ -80,22 +77,21 @@ fn insertion_sort(arr: &mut [i32]) {
 
 fn partition(arr: &mut [i32]) -> usize {
     let mut l = 0;
-    let mut r = arr.len();
-    // 随机选择 pivot
+    let r = arr.len();
     let pivot_index = rand::rng().random_range(0..r);
     let pivot_value = arr[pivot_index];
-
+    let mut r = r - 1;
     loop {
-        while l < r && arr[l] < pivot_value {
+        while l <= r && arr[l] < pivot_value {
             l += 1;
         }
-        while l < r && arr[r - 1] > pivot_value {
+        while l <= r && arr[r] > pivot_value {
             r -= 1;
         }
         if l >= r {
             break;
         }
-        arr.swap(l, r - 1);
+        arr.swap(l, r);
         l += 1;
         r -= 1;
     }
@@ -116,7 +112,7 @@ where
 fn example_benchmark() {
     println!("--- 算法性能测试 (Algorithm Performance Test) ---");
 
-    let len = 2000;
+    let len = 20_000;
     let data: Vec<i32> = (0..len).rev().collect(); // 倒序数组，最坏情况
 
     // 1. 测试冒泡排序 (Bubble Sort)
@@ -132,7 +128,7 @@ fn example_benchmark() {
     let time_quick = calculate(quick_sort, &data);
 
     // 5. 测试标准库排序
-    let time_std = calculate(|arr| arr.sort(), &data);
+    let time_std = calculate(|arr| arr.sort_unstable(), &data);
 
     println!("---------------------------------------------------");
     println!("Algorithm      | Time Taken        | Ratio");

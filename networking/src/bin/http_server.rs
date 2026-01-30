@@ -3,30 +3,30 @@
 // HTTP 服务端 - Axum
 // ============================================================================// 依赖: axum = "0.7", tokio = { version = "1", features = ["full"] }
 
-use axum::routing::{get, post};
-use axum::Router;
-use axum::Json;
-use axum::extract::{Path, Query, State, Multipart};
 use axum::extract::ws::{WebSocket, WebSocketUpgrade};
-use axum::http::{Request, StatusCode, HeaderMap};
-use axum::response::{Response, IntoResponse};
+use axum::extract::{Multipart, Path, Query, State};
+use axum::http::{HeaderMap, Request, StatusCode};
 use axum::middleware::{self, Next};
+use axum::response::{IntoResponse, Response};
+use axum::routing::{get, post};
 use axum::Form;
+use axum::Json;
+use axum::Router;
+use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::collections::HashMap;
+use std::io::Write;
+use std::net::SocketAddr;
 use std::sync::Arc;
-use tokio::sync::{Mutex, broadcast};
 use std::time::Instant;
+use tokio::fs::File;
+use tokio::io::AsyncWriteExt;
+use tokio::sync::{broadcast, Mutex};
+use tower_http::compression::CompressionLayer;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::ServeDir;
 use tower_http::trace::TraceLayer;
-use tower_http::compression::CompressionLayer;
-use std::io::Write;
-use tokio::fs::File;
-use std::collections::HashMap;
-use std::net::SocketAddr;
-use tokio::io::AsyncWriteExt;
-use futures_util::{StreamExt, SinkExt};
 
 async fn hello_world() -> &'static str {
     "Hello, World!"
@@ -130,6 +130,7 @@ async fn example5_query_params() {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct LoginForm {
     username: String,
     password: String,
@@ -148,7 +149,10 @@ async fn example6_form_data() {
 
 use axum::http::HeaderMap as AxumHeaderMap;
 async fn get_headers(headers: AxumHeaderMap) -> String {
-    let user_agent = headers.get("user-agent").and_then(|v| v.to_str().ok()).unwrap_or("Unknown");
+    let user_agent = headers
+        .get("user-agent")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("Unknown");
     format!("User-Agent: {}", user_agent)
 }
 #[allow(dead_code)]
@@ -182,10 +186,7 @@ async fn example8_state() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn my_middleware(
-    req: Request<axum::body::Body>,
-    next: Next,
-) -> Result<Response, StatusCode> {
+async fn my_middleware(req: Request<axum::body::Body>, next: Next) -> Result<Response, StatusCode> {
     let start = Instant::now();
     let uri = req.uri().clone();
     println!("{} - 开始处理", uri);
@@ -217,9 +218,7 @@ async fn example10_cors() {
         .allow_origin(Any)
         .allow_methods(Any)
         .allow_headers(Any);
-    let app = Router::new()
-        .route("/", get(cors_handler))
-        .layer(cors);
+    let app = Router::new().route("/", get(cors_handler)).layer(cors);
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3009").await.unwrap();
     println!("服务运行在 http://127.0.0.1:3009");
     axum::serve(listener, app).await.unwrap();
@@ -228,8 +227,7 @@ async fn example10_cors() {
 #[allow(dead_code)]
 #[tokio::main]
 async fn example11_static_files() {
-    let app = Router::new()
-        .nest_service("/static", ServeDir::new("static"));
+    let app = Router::new().nest_service("/static", ServeDir::new("static"));
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3010").await.unwrap();
     println!("服务运行在 http://127.0.0.1:3010");
     axum::serve(listener, app).await.unwrap();
@@ -280,12 +278,12 @@ async fn upload(mut multipart: Multipart) -> Result<String, String> {
 
         let path = format!("uploads/{}", filename);
         let _ = tokio::fs::create_dir_all("uploads").await;
-        
+
         let mut file = match File::create(&path).await {
             Ok(f) => f,
             Err(e) => return Err(e.to_string()),
         };
-        
+
         if let Err(e) = file.write_all(&data).await {
             return Err(e.to_string());
         }
@@ -312,22 +310,20 @@ async fn example14_file_upload() {
 struct WsAppState {
     tx: broadcast::Sender<String>,
 }
-async fn ws_handler(
-    State(state): State<WsAppState>,
-    ws: WebSocketUpgrade,
-) -> impl IntoResponse {
+async fn ws_handler(State(state): State<WsAppState>, ws: WebSocketUpgrade) -> impl IntoResponse {
     ws.on_upgrade(move |socket| handle_socket(socket, state))
 }
-async fn handle_socket(
-    socket: WebSocket,
-    state: WsAppState,
-) {
+async fn handle_socket(socket: WebSocket, state: WsAppState) {
     let (mut sender, mut receiver) = socket.split();
     let mut rx = state.tx.subscribe();
 
     let send_task = tokio::spawn(async move {
         while let Ok(msg) = rx.recv().await {
-            if sender.send(axum::extract::ws::Message::Text(msg)).await.is_err() {
+            if sender
+                .send(axum::extract::ws::Message::Text(msg))
+                .await
+                .is_err()
+            {
                 break;
             }
         }
@@ -359,25 +355,25 @@ async fn example15_websocket() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn v1_hello() -> &'static str { "API v1" }
-async fn v2_hello() -> &'static str { "API v2" }
+async fn v1_hello() -> &'static str {
+    "API v1"
+}
+async fn v2_hello() -> &'static str {
+    "API v2"
+}
 #[allow(dead_code)]
 #[tokio::main]
 async fn example16_nested_routes() {
     let app = Router::new()
         .route("/hello", get(v1_hello))
-        .nest("/api/v2", Router::new()
-            .route("/hello", get(v2_hello)));
+        .nest("/api/v2", Router::new().route("/hello", get(v2_hello)));
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3015").await.unwrap();
     println!("服务运行在 http://127.0.0.1:3015");
     axum::serve(listener, app).await.unwrap();
 }
 
 async fn get_users_db() -> String {
-    let users = HashMap::from([
-        ("1", "Alice"),
-        ("2", "Bob"),
-    ]);
+    let users = HashMap::from([("1", "Alice"), ("2", "Bob")]);
     serde_json::to_string(&users).unwrap()
 }
 #[allow(dead_code)]
@@ -442,7 +438,7 @@ async fn rate_limited(
 #[tokio::main]
 async fn example20_rate_limit() {
     let limiter = Arc::new(RateLimiter {
-        requests: Arc::new(Mutex::new(HashMap::new()))
+        requests: Arc::new(Mutex::new(HashMap::new())),
     });
     let app = Router::new()
         .route("/limited", get(rate_limited))
