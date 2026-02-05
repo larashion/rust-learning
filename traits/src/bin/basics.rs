@@ -5,10 +5,10 @@
 // Trait (特质) 告诉 Rust 编译器某个特定类型拥有可能与其他类型共享的功能。
 //
 // 核心概念：
-// 1. 定义 Trait (`trait` 关键字)
-// 2. 为类型实现 Trait (`impl Trait for Type`)
+// 1. 定义 Trait (trait 关键字)
+// 2. 为类型实现 Trait (impl Trait for Type)
 // 3. 默认实现 (Default Implementations)
-// 4. 作为参数使用 (`impl Trait` 语法)
+// 4. 作为参数使用 (impl Trait 语法)
 
 // 1. 定义 Trait
 trait Summary {

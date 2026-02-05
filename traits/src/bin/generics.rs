@@ -5,10 +5,10 @@
 // 泛型允许代码对抽象类型工作，而 Trait Bounds 限制了这些类型必须具备的功能。
 //
 // 核心概念：
-// 1. 泛型语法的 Trait Bound (`T: Trait`)
-// 2. `where` 从句 (更清晰的写法)
-// 3. 多重约束 (`T: Trait1 + Trait2`)
-// 4. `impl Trait` 返回类型
+// 1. 泛型语法的 Trait Bound (T: Trait)
+// 2. where 从句 (更清晰的写法)
+// 3. 多重约束 (T: Trait1 + Trait2)
+// 4. impl Trait 返回类型
 // 5. 条件实现 (Blanket Implementations)
 
 use std::fmt::Debug;

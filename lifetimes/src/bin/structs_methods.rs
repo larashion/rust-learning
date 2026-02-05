@@ -20,7 +20,7 @@ impl<'a> MyString<'a> {
 // 示例 1: 结构体中的生命周期
 // ============================================================================
 // 这个结构体持有一个字符串切片（引用）。
-// 这意味着 ImportantExcerpt 的实例不能比它引用的 `part` 活得更久。
+// 这意味着 ImportantExcerpt 的实例不能比它引用的 part 活得更久。
 #[derive(Debug)]
 struct ImportantExcerpt<'a> {
     part: &'a str,

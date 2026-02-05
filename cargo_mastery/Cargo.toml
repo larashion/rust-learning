@@ -1,8 +1,0 @@
-[package]
-name = "cargo-mastery"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-# No external dependencies mostly, maybe rand for simulation
-rand = "0.9.2"

@@ -8,20 +8,29 @@ members = [
     "networking",
     "smart_pointers",
     "traits",
-    "cargo_mastery",
-    "raw_pointers"
+    "raw_pointers",
 ]
 
 [workspace.dependencies]
 walkdir = "2.3"
 tokio = { version = "1", features = ["full"] }
-reqwest = { version = "0.12", features = ["json", "stream", "multipart", "cookies"] }
+reqwest = { version = "0.12", features = [
+    "json",
+    "stream",
+    "multipart",
+    "cookies",
+] }
 axum = { version = "0.7", features = ["multipart", "ws"] }
 tokio-tungstenite = "0.20"
 futures-util = "0.3"
 tokio-stream = "0.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tower-http = { version = "0.5", features = ["fs", "cors", "compression-gzip", "trace"] }
+tower-http = { version = "0.5", features = [
+    "fs",
+    "cors",
+    "compression-gzip",
+    "trace",
+] }
 anyhow = "1.0"
 thiserror = "1.0"
