@@ -2,15 +2,15 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::thread;
 
-fn example_atomic_counter() {
+fn atomic_counter(thread_number: usize, increments: usize) -> usize {
     let counter = Arc::new(AtomicUsize::new(0));
     let mut handles = vec![];
 
-    for _ in 0..10 {
+    for _ in 0..thread_number {
         let counter = Arc::clone(&counter);
         let handle = thread::spawn(move || {
-            for _ in 0..1000 {
-                counter.fetch_add(1, Ordering::Relaxed);
+            for _ in 0..increments {
+                counter.fetch_add(1, Ordering::SeqCst);
             }
         });
         handles.push(handle);
@@ -20,12 +20,14 @@ fn example_atomic_counter() {
         handle.join().unwrap();
     }
 
-    println!("最终计数: {}", counter.load(Ordering::Relaxed));
+    let final_count = counter.load(Ordering::SeqCst);
+    println!("最终计数: {}", final_count);
+    final_count
 }
 
 fn main() {
     println!("=== 示例: 多线程原子计数器 ===");
-    example_atomic_counter();
+    atomic_counter(20, 1000);
 }
 
 #[cfg(test)]
@@ -33,28 +35,23 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_counter_increment() {
-        let counter = AtomicUsize::new(0);
-        counter.fetch_add(1, Ordering::Relaxed);
-        counter.fetch_add(5, Ordering::Relaxed);
-        assert_eq!(counter.load(Ordering::Relaxed), 6);
+    fn test_atomic_counter_basic() {
+        assert_eq!(atomic_counter(10, 100), 1000);
     }
 
     #[test]
-    fn test_multithreaded_counter() {
-        let counter = Arc::new(AtomicUsize::new(0));
-        let mut handles = vec![];
-        for _ in 0..20 {
-            let c = Arc::clone(&counter);
-            handles.push(thread::spawn(move || {
-                for _ in 0..100 {
-                    c.fetch_add(1, Ordering::Relaxed);
-                }
-            }));
-        }
-        for h in handles {
-            h.join().unwrap();
-        }
-        assert_eq!(counter.load(Ordering::Relaxed), 2000);
+    fn test_atomic_counter_zero_threads() {
+        assert_eq!(atomic_counter(0, 100), 0);
+    }
+
+    #[test]
+    fn test_atomic_counter_zero_increments() {
+        assert_eq!(atomic_counter(10, 0), 0);
+    }
+
+    #[test]
+    fn test_atomic_counter_large() {
+        // Ensure it handles reasonably large numbers without overflow (in this context)
+        assert_eq!(atomic_counter(5, 2000), 10000);
     }
 }
