@@ -799,10 +799,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "learning-lifetimes"
-version = "0.1.0"
-
-[[package]]
 name = "learning-networking"
 version = "0.1.0"
 dependencies = [

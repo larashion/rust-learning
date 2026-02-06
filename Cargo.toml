@@ -4,7 +4,6 @@ members = [
     "concurrency",
     "error_handling",
     "file_io",
-    "lifetimes",
     "networking",
     "smart_pointers",
     "traits",

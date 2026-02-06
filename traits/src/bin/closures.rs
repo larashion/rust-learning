@@ -13,7 +13,6 @@
 use rand::Rng;
 use std::thread;
 
-// 引入我们的库模块
 use learning_traits::benchmark::{calculate, Algo, BenchResult};
 use learning_traits::sorting;
 
@@ -24,7 +23,6 @@ fn example_benchmark() {
     let mut rng = rand::rng();
     let data: Vec<i32> = (0..len).map(|_| rng.random_range(0..len)).collect();
 
-    // 定义要测试的算法列表
     let algorithms: [Algo; 5] = [
         ("Bubble Sort", sorting::bubble_sort),
         ("Selection Sort", sorting::selection_sort),
@@ -33,11 +31,9 @@ fn example_benchmark() {
         ("Std Library", sorting::std_sort),
     ];
 
-    // 使用循环自动并行处理
     let results = thread::scope(|s| {
         let mut handles = Vec::new();
 
-        // 第一步：启动所有线程
         for (name, func) in algorithms {
             let data_ref = &data; // 创建一个引用
             let h = s.spawn(move || BenchResult {
@@ -47,7 +43,6 @@ fn example_benchmark() {
             handles.push(h);
         }
 
-        // 第二步：收集所有结果
         let mut collected = Vec::new();
         for h in handles {
             collected.push(h.join().unwrap());
@@ -55,7 +50,6 @@ fn example_benchmark() {
         collected
     });
 
-    // 找到基准时间 (QuickSort)
     let time_quick = results
         .iter()
         .find(|r| r.name == "My QuickSort")

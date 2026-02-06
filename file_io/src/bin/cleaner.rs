@@ -43,9 +43,6 @@ fn is_dir_not_empty_error(e: &std::io::Error) -> bool {
         || (cfg!(windows) && e.raw_os_error() == Some(145))
 }
 
-// ==========================================
-//            以下是测试代码
-// ==========================================
 #[cfg(test)]
 mod tests {
     use super::*;
