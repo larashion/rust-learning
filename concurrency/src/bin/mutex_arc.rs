@@ -1,5 +1,5 @@
+use learning_concurrency::spawn_workers;
 use std::sync::{Arc, Mutex};
-use std::thread;
 
 #[derive(Debug)]
 struct SharedData {
@@ -16,25 +16,16 @@ fn run_complex_data_sharing() {
         values: vec![],
     }));
 
-    let mut handles = vec![];
-
-    for i in 0..5 {
-        let data_clone = Arc::clone(&data);
-        let handle = thread::spawn(move || {
-            let mut data = data_clone.lock().unwrap();
-            data.counter += 1;
-            data.values.push(i);
-            println!(
-                "线程 {}: counter={}, values={:?}",
-                i, data.counter, data.values
-            );
-        });
-        handles.push(handle);
-    }
-
-    for handle in handles {
-        handle.join().unwrap();
-    }
+    // 使用通用并发执行器 spawn_workers
+    spawn_workers(Arc::clone(&data), 5, |data: Arc<Mutex<SharedData>>, i| {
+        let mut guard = data.lock().unwrap();
+        guard.counter += 1;
+        guard.values.push(i as i32);
+        println!(
+            "线程 {}: counter={}, values={:?}",
+            i, guard.counter, guard.values
+        );
+    });
 
     println!("\n[结果] 最终共享数据: {:?}", *data.lock().unwrap());
 }

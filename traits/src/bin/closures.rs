@@ -11,151 +11,80 @@
 
 // ============================================================================
 use rand::Rng;
-use std::time::{Duration, Instant};
+use std::thread;
 
-fn bubble_sort(arr: &mut [i32]) {
-    let n = arr.len();
-    for i in 0..n - 1 {
-        let mut swapped = false;
-        for j in 0..n - 1 - i {
-            if arr[j] > arr[j + 1] {
-                swapped = true;
-                arr.swap(j, j + 1);
-            }
-        }
-        if !swapped {
-            break;
-        }
-    }
-}
+// 引入我们的库模块
+use learning_traits::benchmark::{calculate, Algo, BenchResult};
+use learning_traits::sorting;
 
-fn selection_sort(arr: &mut [i32]) {
-    let n = arr.len();
-    for i in 0..n - 1 {
-        let mut min_idx = i;
-        for j in i + 1..n {
-            if arr[j] < arr[min_idx] {
-                min_idx = j;
-            }
-        }
-        arr.swap(i, min_idx);
-    }
-}
-const THRESHOLD: usize = 47;
-
-pub fn quick_sort(arr: &mut [i32]) {
-    let n = arr.len();
-    if n < 2 {
-        return;
-    }
-    quick_sort_recursion(arr);
-}
-
-fn quick_sort_recursion(arr: &mut [i32]) {
-    if arr.len() < THRESHOLD {
-        insertion_sort(arr);
-        return;
-    }
-    let pivot = partition(arr);
-    let (left, right) = arr.split_at_mut(pivot);
-    quick_sort_recursion(left);
-    quick_sort_recursion(right);
-}
-
-fn insertion_sort(arr: &mut [i32]) {
-    let n = arr.len();
-    for i in 1..n {
-        let key = arr[i];
-        let mut j = i;
-        while j > 0 && arr[j - 1] > key {
-            arr[j] = arr[j - 1];
-            j -= 1;
-        }
-        // 也可以通过冒泡多次交换，将插入值搬到正确位置，但写入太多
-        arr[j] = key;
-    }
-}
-
-fn partition(arr: &mut [i32]) -> usize {
-    let mut l = 0;
-    let r = arr.len();
-    let pivot_index = rand::random_range(0..r);
-    let pivot_value = arr[pivot_index];
-    let mut r = r - 1;
-    loop {
-        while l <= r && arr[l] < pivot_value {
-            l += 1;
-        }
-        while l <= r && arr[r] > pivot_value {
-            r -= 1;
-        }
-        if l >= r {
-            break;
-        }
-        arr.swap(l, r);
-        l += 1;
-        r -= 1;
-    }
-    l
-}
-// 高阶函数：接受一个闭包 F
-// 我们强制要求 F 是 Fn (不可变借用)，因为这是一个纯粹的计算函数，
-// 不应该允许闭包修改外部状态（比如计数器）。语义更明确。
-fn calculate<F>(f: F, arr_origin: &[i32]) -> Duration
-where
-    F: Fn(&mut [i32]),
-{
-    let mut arr = arr_origin.to_vec(); // 复制一份数据，避免影响原数据
-    let start = Instant::now();
-    f(&mut arr);
-    start.elapsed()
-}
 fn example_benchmark() {
-    println!("--- 算法性能测试 (Algorithm Performance Test) ---");
+    println!("--- 算法性能测试 (并行 & 批量版) ---");
 
     let len = 20_000;
     let mut rng = rand::rng();
-    let data: Vec<i32> = (0..len).map(|_| rng.random_range(0..len)).collect(); // 随机数组
+    let data: Vec<i32> = (0..len).map(|_| rng.random_range(0..len)).collect();
 
-    // 1. 测试冒泡排序 (Bubble Sort)
-    let time_bubble = calculate(bubble_sort, &data);
+    // 定义要测试的算法列表
+    let algorithms: [Algo; 5] = [
+        ("Bubble Sort", sorting::bubble_sort),
+        ("Selection Sort", sorting::selection_sort),
+        ("Insertion Sort", sorting::insertion_sort),
+        ("My QuickSort", sorting::quick_sort),
+        ("Std Library", sorting::std_sort),
+    ];
 
-    // 2. 测试选择排序 (Selection Sort)
-    let time_selection = calculate(selection_sort, &data);
+    // 使用循环自动并行处理
+    let results = thread::scope(|s| {
+        let mut handles = Vec::new();
 
-    // 3. 测试插入排序 (Insertion Sort)
-    let time_insertion = calculate(insertion_sort, &data);
+        // 第一步：启动所有线程
+        for (name, func) in algorithms {
+            let data_ref = &data; // 创建一个引用
+            let h = s.spawn(move || BenchResult {
+                name,
+                time: calculate(func, data_ref), // move 进去的是引用
+            });
+            handles.push(h);
+        }
 
-    // 4. 测试快速排序 (Quick Sort - Hybrid)
-    let time_quick = calculate(quick_sort, &data);
+        // 第二步：收集所有结果
+        let mut collected = Vec::new();
+        for h in handles {
+            collected.push(h.join().unwrap());
+        }
+        collected
+    });
 
-    // 5. 测试标准库排序(sort_unstable)
-    let time_std = calculate(|arr| arr.sort_unstable(), &data);
+    // 找到基准时间 (QuickSort)
+    let time_quick = results
+        .iter()
+        .find(|r| r.name == "My QuickSort")
+        .map(|r| r.time)
+        .unwrap();
 
     println!("---------------------------------------------------");
     println!("Algorithm      | Time Taken        | Ratio");
     println!("---------------------------------------------------");
-    println!(
-        "Bubble Sort    | {:<17?} | {:.2}x slower",
-        time_bubble,
-        time_bubble.as_secs_f64() / time_quick.as_secs_f64()
-    );
-    println!(
-        "Selection Sort | {:<17?} | {:.2}x slower",
-        time_selection,
-        time_selection.as_secs_f64() / time_quick.as_secs_f64()
-    );
-    println!(
-        "Insertion Sort | {:<17?} | {:.2}x slower",
-        time_insertion,
-        time_insertion.as_secs_f64() / time_quick.as_secs_f64()
-    );
-    println!("My QuickSort   | {:<17?} | 1.00x (Baseline)", time_quick);
-    println!(
-        "Std Library    | {:<17?} | {:.2}x faster",
-        time_std,
-        time_quick.as_secs_f64() / time_std.as_secs_f64()
-    );
+
+    for res in results {
+        let ratio = match res.name {
+            "My QuickSort" => "1.00x (Baseline)".to_string(),
+            _ if res.time < time_quick => {
+                format!(
+                    "{:.2}x faster",
+                    time_quick.as_secs_f64() / res.time.as_secs_f64()
+                )
+            }
+            _ => {
+                format!(
+                    "{:.2}x slower",
+                    res.time.as_secs_f64() / time_quick.as_secs_f64()
+                )
+            }
+        };
+
+        println!("{:<15} | {:<17?} | {}", res.name, res.time, ratio);
+    }
     println!("---------------------------------------------------");
 }
 
