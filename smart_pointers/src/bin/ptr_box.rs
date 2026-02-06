@@ -1,4 +1,3 @@
-// #![allow(unused)] // Cleaned up: Removed global suppression
 #![allow(clippy::boxed_local)]
 // ============================================================================ 
 // Box<T> - 堆分配的智能指针

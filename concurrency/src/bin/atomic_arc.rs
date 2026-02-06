@@ -11,6 +11,7 @@ pub struct MyArc<T> {
     ptr: NonNull<ArcInner<T>>,
 }
 
+// 必须实现 Send 和 Sync 才能在多线程间传递
 unsafe impl<T: Send + Sync> Sync for MyArc<T> {}
 unsafe impl<T: Send + Sync> Send for MyArc<T> {}
 
@@ -80,7 +81,7 @@ fn main() {
 mod tests {
     use super::*;
     use std::sync::atomic::AtomicBool;
-    use std::thread;
+    use learning_concurrency::spawn_workers; // 引用库中的通用工具
 
     #[test]
     fn test_arc_basic() {
@@ -113,14 +114,11 @@ mod tests {
     #[test]
     fn test_arc_multithreaded() {
         let val = MyArc::new(100);
-        let mut handles = vec![];
-
-        for _ in 0..10 {
-            let v = val.clone();
-            handles.push(thread::spawn(move || {
-                assert_eq!(*v, 100);
-            }));
-        }
-        handles.into_iter().for_each(|h| h.join().unwrap());
+        
+        // 使用通用的 spawn_workers 来测试我们手写的 MyArc
+        // 这证明了 MyArc 满足 Clone + Send，且行为符合预期
+        spawn_workers(val, 10, |v, _| {
+            assert_eq!(*v, 100);
+        });
     }
 }

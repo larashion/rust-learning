@@ -32,7 +32,7 @@ fn handle_tasks(rx: mpsc::Receiver<Task>) {
 }
 
 fn main() {
-    println!("=== Channel 传递枚举消息 (健壮版) ===");
+    println!("=== Channel 传递枚举消息 ===");
 
     let (tx, rx) = mpsc::channel();
 
